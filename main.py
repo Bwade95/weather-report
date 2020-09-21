@@ -3,16 +3,21 @@ import requests
 API_KEY = "API_KEY" # enter your own key here
 WS_URL = "http://api.weatherstack.com/current"
 
-city = "city" # enter your city here
+cities = []
+with open('cities.txt') as f:
+  for line in f:
+    cities.append(line.strip())
+print(cities)
 
-parameters = {'access_key': API_KEY, 'query': city}
+for city in cities:
+  parameters = {'access_key': API_KEY, 'query': city} 
+  response = requests.get((WS_URL), parameters)
+  js = response.json()
 
-response = requests.get((WS_URL), parameters)
-js = response.json()
+  temperature = js['current']['temperature']
+  theDate = js['location']['localtime']
+  city = js['location']['name']
+  country = js['location']['country']
 
-temperature = js['current']['temperature']
-theDate = js['location']['localtime']
-city = js['location']['name']
-country = js['location']['country']
-
-print(f"The temperature in {city}, {country} on {theDate} is {temperature} degrees Ceslius")
+  with open(f"{city}.txt", "a") as f:
+    f.write(f"Date/Time: {theDate}, Temperature(Celsius): {temperature}\n")
